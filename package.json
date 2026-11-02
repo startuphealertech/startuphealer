@@ -1,0 +1,27 @@
+{
+  "name": "startuphealer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "StartupHealer monorepo — Next.js web (Vercel) + Express/MongoDB api (Render/Docker)",
+  "workspaces": [
+    "web",
+    "api"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=web",
+    "dev:web": "npm run dev --workspace=web",
+    "dev:api": "npm run dev --workspace=api",
+    "build": "npm run build --workspace=web",
+    "build:web": "npm run build --workspace=web",
+    "lint": "npm run lint --workspaces --if-present",
+    "docker:local": "docker compose -f docker-compose.yml up -d --build",
+    "docker:local:down": "docker compose -f docker-compose.yml down",
+    "docker:staging": "docker compose -f docker-compose.staging.yml --env-file api/.env.staging up -d --build",
+    "docker:staging:down": "docker compose -f docker-compose.staging.yml --env-file api/.env.staging down",
+    "docker:logs": "docker compose -f docker-compose.yml logs -f api",
+    "seed:admin": "npm run seed:admin --workspace=api"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  }
+}

@@ -1,0 +1,53 @@
+# LOCAL development: MongoDB + api (hot reload) in Docker.
+# Frontend runs on your machine with `npm run dev` (http://localhost:3000).
+#
+#   docker compose up -d --build        # start
+#   docker compose logs -f api          # logs
+#   docker compose down                 # stop (data kept in volume)
+#   docker compose down -v              # stop + wipe DB
+
+name: startuphealer-local
+
+services:
+  mongo:
+    image: mongo:8.0
+    container_name: sh-mongo-local
+    restart: unless-stopped
+    ports:
+      - "27017:27017" # connect with MongoDB Compass: mongodb://localhost:27017
+    volumes:
+      - mongo-local-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+      target: development
+    container_name: sh-api-local
+    restart: unless-stopped
+    env_file:
+      - path: api/.env
+        required: false
+    environment:
+      NODE_ENV: development
+      PORT: 5000
+      MONGODB_URI: mongodb://mongo:27017/startuphealer
+      JWT_SECRET: ${JWT_SECRET:-local-dev-secret-change-me-0123456789abcdef}
+      CORS_ORIGINS: http://localhost:3000
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@startuphealer.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Admin@12345}
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./api/src:/app/api/src # live reload
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+volumes:
+  mongo-local-data:

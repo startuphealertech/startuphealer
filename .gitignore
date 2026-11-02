@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+
+# Next.js
+web/.next/
+web/out/
+web/next-env.d.ts
+*.tsbuildinfo
+
+# env files (never commit secrets) — templates are named example.env
+.env
+.env.*
+**/.env
+**/.env.*
+
+# logs & OS
+npm-debug.log*
+yarn-error.log*
+.DS_Store
+Thumbs.db
+
+# editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# vercel
+.vercel

@@ -1,0 +1,47 @@
+# STAGING: MongoDB (with auth) + production-build api in Docker, on a VPS / staging box.
+#
+#   cp api/staging.example.env api/.env.staging   # fill real values
+#   docker compose -f docker-compose.staging.yml --env-file api/.env.staging up -d --build
+#
+# Mongo is NOT published to the internet; only the API port is exposed.
+
+name: startuphealer-staging
+
+services:
+  mongo:
+    image: mongo:8.0
+    container_name: sh-mongo-staging
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:?set MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?set MONGO_ROOT_PASSWORD}
+    volumes:
+      - mongo-staging-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+      target: production
+    image: startuphealer-api:staging
+    container_name: sh-api-staging
+    restart: always
+    env_file:
+      - api/.env.staging
+    environment:
+      NODE_ENV: staging
+      PORT: 5000
+      MONGODB_URI: mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongo:27017/startuphealer?authSource=admin
+    ports:
+      - "${API_PORT:-5000}:5000"
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+volumes:
+  mongo-staging-data:

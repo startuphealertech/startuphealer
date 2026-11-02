@@ -1,0 +1,38 @@
+# Render Blueprint — PRODUCTION api (Docker) + MongoDB Atlas
+# Render dashboard -> New -> Blueprint -> select this repo.
+# Secrets marked `sync: false` are entered in the Render dashboard (never commit them).
+services:
+  - type: web
+    name: startuphealer-api
+    runtime: docker
+    plan: starter
+    region: singapore
+    branch: main
+    rootDir: .
+    dockerfilePath: ./api/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeploy: true
+    buildFilter:
+      paths:
+        - api/**
+        - package-lock.json
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: TRUST_PROXY
+        value: "2" # Vercel rewrite + Render proxy
+      - key: MONGODB_URI # mongodb+srv://<user>:<pass>@<cluster>.mongodb.net/startuphealer?retryWrites=true&w=majority
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: CORS_ORIGINS # e.g. https://startuphealer.com,https://www.startuphealer.com,https://startuphealer.vercel.app
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false

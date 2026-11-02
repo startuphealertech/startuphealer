@@ -1,0 +1,13 @@
+**/node_modules
+**/.next
+**/.env
+**/.env.*
+!**/.env.example
+**/npm-debug.log*
+.git
+.github
+.vscode
+web/src
+web/public
+docs
+*.md

@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+
+jobs:
+  web:
+    name: Web (Next.js) — lint & build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint --workspace=web
+      - run: npm run build --workspace=web
+        env:
+          API_URL: http://localhost:5000
+          NEXT_PUBLIC_SITE_URL: https://startuphealer.com
+
+  api:
+    name: API — syntax check & Docker build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --workspace=api
+      - run: for f in $(find api/src -name '*.js'); do node --check "$f"; done
+      - run: docker build -f api/Dockerfile --target production -t startuphealer-api:ci .
