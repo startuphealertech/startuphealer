@@ -80,7 +80,7 @@ export default function SuccessStoriesPage() {
         </div>
       </section>
 
-      <section className="bg-mist py-16">
+      <section className="bg-mist/70 py-16">
         <div className="container-x">
           <SectionHeading title="Why Clients" highlight="Choose Us" />
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -103,6 +103,7 @@ export default function SuccessStoriesPage() {
       </section>
 
       <CtaBanner
+        original
         title="Ready to Join Our Success Stories?"
         description="Let's write your success story together. Get started today and experience the StartupHealer difference!"
         primary={{ href: "/contact", label: "Get Started Today" }}

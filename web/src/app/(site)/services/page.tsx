@@ -55,7 +55,7 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      <section className="bg-mist py-16 sm:py-20">
+      <section className="bg-mist/70 py-16 sm:py-20">
         <div className="container-x">
           <SectionHeading title="Why Choose" highlight="StartupHealer Services?" />
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

@@ -13,8 +13,12 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         Skip to content
       </a>
       <JsonLd data={organizationJsonLd} />
+      {/* Site-wide background (matches startuphealer.com): leaf artwork, cover/center, fixed while scrolling,
+          with a soft white → cyan → emerald overlay. A fixed layer (not background-attachment: fixed)
+          so it also stays put on iOS/Android, where bg-fixed is ignored or janky. */}
+      <div className="site-bg" style={{ backgroundImage: "url(/images/leaf.png)" }} aria-hidden />
       <Navbar />
-      <main id="main" className="pt-16 md:pt-20">
+      <main id="main" className="pt-16">
         {children}
       </main>
       <Footer />

@@ -7,7 +7,6 @@ import { FaInfoCircle } from "react-icons/fa";
 import { api, ApiClientError, type User } from "@/lib/api";
 import { useAuth } from "@/components/AuthProvider";
 import PasswordInput from "./PasswordInput";
-import SocialButtons from "./SocialButtons";
 
 function strength(p: string) {
   let s = 0;
@@ -139,7 +138,6 @@ export default function RegisterForm() {
           {loading ? "Processing..." : "Create an account"}
         </button>
       </form>
-      <SocialButtons />
       <p className="mt-6 text-center text-sm text-slate-600">
         Already have an account?{" "}
         <Link href="/login" className="font-semibold text-emerald-700 hover:underline">
