@@ -67,7 +67,7 @@ export default async function ServiceDetailPage({ params }: Props) {
         ])}
       />
 
-      <section className="bg-gradient-to-br from-cyan-50 via-white to-emerald-50">
+      <section className="bg-gradient-to-br from-cyan-50/60 via-white/40 to-emerald-50/60">
         <div className="container-x py-10 sm:py-16">
           <nav aria-label="Breadcrumb" className="mb-6 text-sm text-slate-500">
             <Link href="/" className="hover:text-cyan-700">Home</Link> / <Link href="/services" className="hover:text-cyan-700">Services</Link> /{" "}
@@ -130,7 +130,7 @@ export default async function ServiceDetailPage({ params }: Props) {
       </section>
 
       {stories.length > 0 && (
-        <section className="bg-mist py-14">
+        <section className="bg-mist/70 py-14">
           <div className="container-x">
             <h2 className="mb-6 text-center text-2xl font-bold">Success Stories</h2>
             <div className="grid gap-5 md:grid-cols-2">

@@ -34,15 +34,31 @@ export default function LeadsPage() {
   const [selected, setSelected] = useState<Lead | null>(null);
   const onSearch = useCallback((v: string) => setQ(v), []);
 
+  const [actionError, setActionError] = useState("");
+
+  // Returns false (and shows the error) instead of failing silently with an unhandled rejection.
   async function update(id: string, body: Partial<Lead>) {
-    await api(`/admin/leads/${id}`, { method: "PATCH", body });
-    reload();
+    setActionError("");
+    try {
+      await api(`/admin/leads/${id}`, { method: "PATCH", body });
+      reload();
+      return true;
+    } catch (e) {
+      setActionError(e instanceof Error ? e.message : "Could not update the lead");
+      reload(); // re-sync the UI with the server state
+      return false;
+    }
   }
   async function remove(id: string) {
     if (!confirm("Delete this lead permanently?")) return;
-    await api(`/admin/leads/${id}`, { method: "DELETE" });
-    setSelected(null);
-    reload();
+    setActionError("");
+    try {
+      await api(`/admin/leads/${id}`, { method: "DELETE" });
+      setSelected(null);
+      reload();
+    } catch (e) {
+      setActionError(e instanceof Error ? e.message : "Could not delete the lead");
+    }
   }
 
   const exportUrl = `/api/v1/admin/leads/export.csv?${new URLSearchParams(Object.fromEntries(Object.entries(filters).filter(([, v]) => v)))}`;
@@ -68,6 +84,11 @@ export default function LeadsPage() {
         </a>
       </div>
 
+      {actionError && (
+        <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">
+          {actionError}
+        </p>
+      )}
       <Panel>
         <StateRow loading={loading} error={error} empty={!!data && data.items.length === 0} />
         {data && data.items.length > 0 && !loading && (
@@ -139,8 +160,7 @@ export default function LeadsPage() {
           lead={selected}
           onClose={() => setSelected(null)}
           onSave={async (b) => {
-            await update(selected._id, b);
-            setSelected(null);
+            if (await update(selected._id, b)) setSelected(null);
           }}
           onDelete={() => remove(selected._id)}
         />

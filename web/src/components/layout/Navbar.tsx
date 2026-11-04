@@ -8,27 +8,27 @@ import { FaUserCircle, FaSignOutAlt, FaTachometerAlt, FaTimes } from "react-icon
 import { mainNav, site } from "@/data/site";
 import { useAuth } from "@/components/AuthProvider";
 
+// Header styled after startuphealer.com: solid white bar, shadow-md, cyan-100 bottom border, 64px tall,
+// gray-700 / medium links with cyan-600 hover. On small screens the hamburger sits left of the logo
+// and the menu slides in from the left, as on the reference.
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();
 
-  // Close the drawer on navigation (render-time state adjustment, no effect needed)
+  // Close the menu on navigation (render-time state adjustment, no effect needed)
   const [lastPath, setLastPath] = useState(pathname);
   if (lastPath !== pathname) {
     setLastPath(pathname);
     setOpen(false);
   }
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-  useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
@@ -39,132 +39,137 @@ export default function Navbar() {
   };
 
   return (
-    <header
-      className={`fixed inset-x-0 top-0 z-40 transition-all ${
-        scrolled ? "bg-white/95 shadow-md backdrop-blur" : "bg-white/80 backdrop-blur-sm"
-      }`}
-    >
-      <nav className="container-x flex h-16 items-center justify-between gap-4 md:h-20" aria-label="Main">
-        <Link href="/" className="flex shrink-0 items-center gap-2" aria-label={`${site.name} home`}>
-          <Image src="/images/logo.jpeg" alt="StartupHealer Logo" width={140} height={73} priority className="h-11 w-auto md:h-14" />
-        </Link>
-
-        <ul className="hidden items-center gap-1 lg:flex">
-          {mainNav.map((item) => (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                className={`rounded-full px-4 py-2 text-[15px] font-medium transition-colors ${
-                  isActive(item.href) ? "bg-cyan-50 text-cyan-700" : "text-slate-700 hover:text-cyan-700"
-                }`}
-              >
-                {item.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-
-        <div className="hidden items-center gap-2 lg:flex">
-          {user ? (
-            <>
-              {user.role === "admin" && (
-                <Link href="/admin" className="btn btn-outline !px-4 !py-2 text-sm">
-                  <FaTachometerAlt /> Admin
-                </Link>
-              )}
-              <Link href="/profile" className="btn btn-outline !px-4 !py-2 text-sm">
-                <FaUserCircle /> {user.firstName}
-              </Link>
-              <button onClick={handleLogout} className="btn !px-3 text-slate-500 hover:text-red-600" aria-label="Logout">
-                <FaSignOutAlt />
-              </button>
-            </>
-          ) : (
-            <>
-              <Link href="/login" className="btn !px-4 !py-2 text-sm text-cyan-700 hover:bg-cyan-50">
-                Log in
-              </Link>
-              <Link href="/register" className="btn btn-primary !px-5 !py-2 text-sm">
-                Get Started Free
-              </Link>
-            </>
-          )}
+    <header className="fixed inset-x-0 top-0 z-40 border-b border-cyan-100 bg-white shadow-md">
+      <nav className="container-x flex h-16 items-center justify-between gap-4" aria-label="Main">
+        <div className="flex min-w-0 items-center">
+          <button
+            type="button"
+            onClick={() => setOpen((o) => !o)}
+            className="-ml-2 mr-1 flex h-11 w-11 shrink-0 flex-col items-center justify-center gap-1.5 rounded-xl transition hover:bg-cyan-50 sm:mr-2 lg:hidden"
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+          >
+            <span className={`block h-0.5 w-6 bg-cyan-600 transition-all duration-300 ${open ? "translate-y-2 rotate-45" : ""}`} />
+            <span className={`block h-0.5 w-6 bg-emerald-600 transition-all duration-300 ${open ? "opacity-0" : ""}`} />
+            <span className={`block h-0.5 w-6 bg-green-600 transition-all duration-300 ${open ? "-translate-y-2 -rotate-45" : ""}`} />
+          </button>
+          <Link href="/" className="flex min-w-0 items-center gap-2 sm:gap-3" aria-label={`${site.name} home`}>
+            <Image src="/images/logo.jpeg" alt="StartupHealer Logo" width={140} height={73} priority className="h-10 w-auto sm:h-12" />
+            <span className="truncate bg-gradient-to-r from-cyan-600 via-emerald-600 to-green-600 bg-clip-text font-display text-xl font-bold text-transparent sm:text-2xl" aria-hidden>
+              {site.name}
+            </span>
+          </Link>
         </div>
 
-        <button
-          onClick={() => setOpen((o) => !o)}
-          className="flex h-11 w-11 flex-col items-center justify-center gap-1.5 rounded-xl lg:hidden"
-          aria-label="Toggle menu"
-          aria-expanded={open}
-          aria-controls="mobile-menu"
-        >
-          <span className={`block h-0.5 w-6 bg-cyan-600 transition-all ${open ? "translate-y-2 rotate-45" : ""}`} />
-          <span className={`block h-0.5 w-6 bg-emerald-600 transition-all ${open ? "opacity-0" : ""}`} />
-          <span className={`block h-0.5 w-6 bg-green-600 transition-all ${open ? "-translate-y-2 -rotate-45" : ""}`} />
-        </button>
+        <div className="hidden items-center gap-5 lg:flex xl:gap-6">
+          <ul className="flex items-center gap-5 xl:gap-7">
+            {mainNav.map((item) => {
+              const active = isActive(item.href);
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    aria-current={active ? "page" : undefined}
+                    className={`group relative inline-block whitespace-nowrap py-2 font-medium transition-colors duration-200 ${
+                      active ? "text-cyan-600" : "text-gray-700 hover:text-cyan-600"
+                    }`}
+                  >
+                    {item.name}
+                    {/* gradient underline: full width when active, grows on hover */}
+                    <span
+                      aria-hidden
+                      className={`absolute inset-x-0 -bottom-0.5 h-0.5 origin-left rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 transition-transform duration-300 ${
+                        active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                      }`}
+                    />
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+
+          {/* Signed-in controls only (no Log in / Get Started Free in the header) */}
+          {user && (
+            <div className="flex items-center gap-2 border-l border-cyan-100 pl-4 xl:pl-6">
+              {user.role === "admin" && (
+                <Link href="/admin" aria-label="Admin panel" className="btn btn-outline !px-3 !py-2 text-sm xl:!px-4">
+                  <FaTachometerAlt /> <span className="hidden xl:inline">Admin</span>
+                </Link>
+              )}
+              <Link href="/profile" aria-label={`Profile — ${user.firstName}`} className="btn btn-outline !px-3 !py-2 text-sm xl:!px-4">
+                <FaUserCircle /> <span className="hidden max-w-[8rem] truncate xl:inline">{user.firstName}</span>
+              </Link>
+              <button onClick={handleLogout} className="btn !px-3 text-gray-500 hover:text-red-600" aria-label="Logout">
+                <FaSignOutAlt />
+              </button>
+            </div>
+          )}
+        </div>
       </nav>
 
-      {/* Mobile drawer */}
+      {/* Mobile menu */}
       <div
-        className={`fixed inset-0 z-40 bg-slate-900/40 transition-opacity lg:hidden ${open ? "opacity-100" : "pointer-events-none opacity-0"}`}
+        className={`fixed inset-0 z-40 bg-black/50 transition-opacity duration-300 lg:hidden ${open ? "opacity-100" : "pointer-events-none opacity-0"}`}
         onClick={() => setOpen(false)}
         aria-hidden
       />
       <aside
         id="mobile-menu"
-        className={`fixed right-0 top-0 z-50 flex h-dvh w-[82%] max-w-xs flex-col bg-white shadow-2xl transition-transform duration-300 lg:hidden ${
-          open ? "translate-x-0" : "translate-x-full"
+        className={`fixed left-0 top-0 z-50 flex h-dvh w-72 max-w-[85vw] flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
+          open ? "translate-x-0" : "-translate-x-full"
         }`}
         aria-hidden={!open}
+        inert={!open}
       >
-        <div className="flex items-center justify-between border-b border-slate-100 p-4">
-          <Image src="/images/logo.jpeg" alt="StartupHealer Logo" width={110} height={57} className="h-10 w-auto" />
-          <button onClick={() => setOpen(false)} className="flex h-11 w-11 items-center justify-center rounded-xl text-slate-600" aria-label="Close menu">
-            <FaTimes size={20} />
-          </button>
+        <div className="border-b-2 border-cyan-200 bg-gradient-to-r from-cyan-50 to-emerald-50 p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-2" aria-label={`${site.name} home`}>
+              <Image src="/images/logo.jpeg" alt="" width={110} height={57} className="h-10 w-auto" style={{ width: "auto" }} />
+              <span className="bg-gradient-to-r from-cyan-600 via-emerald-600 to-green-600 bg-clip-text font-display text-lg font-bold text-transparent">{site.name}</span>
+            </Link>
+            <button onClick={() => setOpen(false)} className="flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 transition-colors hover:text-cyan-600" aria-label="Close menu">
+              <FaTimes size={20} />
+            </button>
+          </div>
+          <p className="text-xs font-medium text-gray-600">Empowering Startups</p>
         </div>
-        <p className="px-5 pt-4 text-xs font-semibold uppercase tracking-wider text-emerald-600">Empowering Startups</p>
-        <ul className="flex-1 overflow-y-auto p-3">
-          {mainNav.map((item) => (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                tabIndex={open ? 0 : -1}
-                className={`block rounded-xl px-4 py-3 text-base font-medium ${
-                  isActive(item.href) ? "bg-gradient-to-r from-cyan-50 to-emerald-50 text-cyan-700" : "text-slate-700"
-                }`}
-              >
-                {item.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <div className="space-y-2 border-t border-slate-100 p-4">
-          {user ? (
-            <>
-              {user.role === "admin" && (
-                <Link href="/admin" tabIndex={open ? 0 : -1} className="btn btn-outline w-full">
-                  <FaTachometerAlt /> Admin Panel
+        <ul className="flex flex-1 flex-col gap-2 overflow-y-auto p-4">
+          {mainNav.map((item) => {
+            const active = isActive(item.href);
+            return (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  aria-current={active ? "page" : undefined}
+                  className={`block rounded-lg border px-4 py-3 font-medium transition-all ${
+                    active
+                      ? "border-cyan-200 bg-gradient-to-r from-cyan-50 to-emerald-50 text-cyan-700"
+                      : "border-transparent text-gray-700 hover:border-cyan-200 hover:bg-gradient-to-r hover:from-cyan-50 hover:to-emerald-50 hover:text-cyan-600"
+                  }`}
+                >
+                  {item.name}
                 </Link>
-              )}
-              <Link href="/profile" tabIndex={open ? 0 : -1} className="btn btn-outline w-full">
-                <FaUserCircle /> View Profile
+              </li>
+            );
+          })}
+        </ul>
+        {/* Signed-in actions only */}
+        {user && (
+          <div className="space-y-2 border-t border-cyan-200 p-4">
+            {user.role === "admin" && (
+              <Link href="/admin" className="btn btn-outline w-full">
+                <FaTachometerAlt /> Admin Panel
               </Link>
-              <button onClick={handleLogout} tabIndex={open ? 0 : -1} className="btn w-full text-red-600 hover:bg-red-50">
-                <FaSignOutAlt /> Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <Link href="/login" tabIndex={open ? 0 : -1} className="btn btn-outline w-full">
-                Log in
-              </Link>
-              <Link href="/register" tabIndex={open ? 0 : -1} className="btn btn-primary w-full">
-                Get Started Free
-              </Link>
-            </>
-          )}
-        </div>
+            )}
+            <Link href="/profile" className="btn btn-outline w-full">
+              <FaUserCircle /> View Profile
+            </Link>
+            <button onClick={handleLogout} className="btn w-full text-red-600 hover:bg-red-50">
+              <FaSignOutAlt /> Logout
+            </button>
+          </div>
+        )}
       </aside>
     </header>
   );

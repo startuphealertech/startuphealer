@@ -85,7 +85,7 @@ export default function ProfileView() {
   ];
 
   return (
-    <section className="bg-gradient-to-br from-cyan-50 via-white to-emerald-50 py-10 sm:py-16">
+    <section className="bg-gradient-to-br from-cyan-50/60 via-white/40 to-emerald-50/60 py-10 sm:py-16">
       <div className="container-x max-w-4xl">
         <div className="card overflow-hidden">
           <div className="h-24 bg-brand-gradient sm:h-32" />

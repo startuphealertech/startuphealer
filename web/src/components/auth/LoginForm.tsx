@@ -7,7 +7,6 @@ import { api, ApiClientError, type User } from "@/lib/api";
 import { useAuth } from "@/components/AuthProvider";
 import { safeNext } from "@/lib/redirect";
 import PasswordInput from "./PasswordInput";
-import SocialButtons from "./SocialButtons";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -67,7 +66,6 @@ export default function LoginForm() {
           {loading ? "Signing in..." : "Log in"}
         </button>
       </form>
-      <SocialButtons />
       <p className="mt-6 text-center text-sm text-slate-600">
         Don&apos;t have an account?{" "}
         <Link href="/register" className="font-semibold text-emerald-700 hover:underline">

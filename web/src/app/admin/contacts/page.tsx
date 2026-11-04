@@ -15,14 +15,27 @@ export default function ContactsPage() {
   const { data, loading, error, page, setPage, reload } = usePaged<Contact>("/admin/contacts", { q, status });
   const onSearch = useCallback((v: string) => setQ(v), []);
 
+  const [actionError, setActionError] = useState("");
+
+  // Surface API failures instead of failing silently with an unhandled rejection.
   const setSt = async (id: string, s: string) => {
-    await api(`/admin/contacts/${id}`, { method: "PATCH", body: { status: s } });
+    setActionError("");
+    try {
+      await api(`/admin/contacts/${id}`, { method: "PATCH", body: { status: s } });
+    } catch (e) {
+      setActionError(e instanceof Error ? e.message : "Could not update the message");
+    }
     reload();
   };
   const del = async (id: string) => {
     if (!confirm("Delete this message?")) return;
-    await api(`/admin/contacts/${id}`, { method: "DELETE" });
-    reload();
+    setActionError("");
+    try {
+      await api(`/admin/contacts/${id}`, { method: "DELETE" });
+      reload();
+    } catch (e) {
+      setActionError(e instanceof Error ? e.message : "Could not delete the message");
+    }
   };
 
   return (
@@ -36,6 +49,11 @@ export default function ContactsPage() {
           ))}
         </select>
       </div>
+      {actionError && (
+        <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">
+          {actionError}
+        </p>
+      )}
       <Panel>
         <StateRow loading={loading} error={error} empty={!!data && data.items.length === 0} />
         {!loading && (

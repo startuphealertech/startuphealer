@@ -6,8 +6,10 @@ import Footer from "@/components/layout/Footer";
 export default function NotFound() {
   return (
     <>
+    {/* Same fixed background as the (site) layout — the reference 404 also sits on the leaf artwork */}
+    <div className="site-bg" style={{ backgroundImage: "url(/images/leaf.png)" }} aria-hidden />
     <Navbar />
-    <main className="pt-16 md:pt-20">
+    <main className="pt-16">
     <section className="container-x flex min-h-[70dvh] flex-col items-center justify-center py-16 text-center">
       <Image src="/images/leaf.png" alt="" width={200} height={150} className="w-36 opacity-80" aria-hidden />
       <p className="text-gradient mt-4 text-7xl font-extrabold">404</p>

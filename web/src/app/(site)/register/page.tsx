@@ -11,7 +11,7 @@ export const metadata = pageMetadata({
 
 export default function RegisterPage() {
   return (
-    <AuthShell title="StartupHealer Welcomes You!" subtitle="Create new account — it's free">
+    <AuthShell title="StartupHealer Welcomes You!" subtitle="create new account">
       <RegisterForm />
     </AuthShell>
   );

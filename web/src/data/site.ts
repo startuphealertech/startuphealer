@@ -37,6 +37,8 @@ export const site = {
 export const whatsappLink = (text: string = site.whatsappText) =>
   `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(text)}`;
 
+// Header navigation (desktop bar + mobile menu), in this order.
+// "Success Stories" → /success-stories (the old /testimonials URL 301-redirects there).
 export const mainNav = [
   { name: "Home", href: "/" },
   { name: "About", href: "/about" },

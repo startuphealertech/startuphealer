@@ -1,6 +1,7 @@
 import { pageMetadata } from "@/lib/seo";
 import AuthShell from "@/components/auth/AuthShell";
 import LoginForm from "@/components/auth/LoginForm";
+import SocialButtons from "@/components/auth/SocialButtons";
 
 export const metadata = pageMetadata({
   title: "Log in",
@@ -11,7 +12,7 @@ export const metadata = pageMetadata({
 
 export default function LoginPage() {
   return (
-    <AuthShell title="Hi, Welcome Back!" subtitle="Sign in to StartupHealer">
+    <AuthShell title="Hi Welcome Back!" subtitle="Sign in to account" aside={<SocialButtons />}>
       <LoginForm />
     </AuthShell>
   );

@@ -52,7 +52,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="bg-mist py-16 sm:py-20">
+      <section className="bg-mist/70 py-16 sm:py-20">
         <div className="container-x grid gap-5 md:grid-cols-2">
           <Reveal>
             <div className="card h-full p-8">
@@ -95,7 +95,7 @@ export default function AboutPage() {
         </p>
       </section>
 
-      <section id="team" className="bg-mist py-16 sm:py-24">
+      <section id="team" className="bg-mist/70 py-16 sm:py-24">
         <div className="container-x">
           <SectionHeading
             title="Meet the"
@@ -125,6 +125,7 @@ export default function AboutPage() {
       </section>
 
       <CtaBanner
+        original
         title="Want to Work With Us?"
         description="Our team is here to support your startup journey. Get in touch to discuss how we can help you succeed."
         primary={{ href: "/contact", label: "Schedule a Consultation" }}
